@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+
+    <TextView
+        android:id="@+id/tv_down_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="剩余：00：10：00"/>
+    <View
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</RelativeLayout>

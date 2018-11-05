@@ -1,0 +1,49 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 27
+
+
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation 'com.badoo.mobile:android-weak-handler:1.1'
+}
+repositories {
+    maven {
+        repositories {
+            url 'https://oss.sonatype.org/content/repositories/releases/'
+        }
+    }
+}
+
+
+apply plugin: 'com.novoda.bintray-release'
+publish {
+    userOrg = rootProject.userOrg
+    groupId = rootProject.groupId
+    artifactId = rootProject.artifactId
+    uploadName = rootProject.uploadName
+    publishVersion = rootProject.publishVersion
+    desc = rootProject.description
+    website = rootProject.website
+    licences = rootProject.licences
+}
