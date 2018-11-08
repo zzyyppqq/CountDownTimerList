@@ -27,12 +27,17 @@ ext {
     website = 'https://github.com/zzyyppqq/CountDownTimerList'
     licences = ['Apache-2.0']
 }
+// ./gradlew clean build bintrayUpload -PbintrayUser=hnszyp -PbintrayKey=* -PdryRun=false
 
 allprojects {
     repositories {
         google()
         jcenter()
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 task clean(type: Delete) {

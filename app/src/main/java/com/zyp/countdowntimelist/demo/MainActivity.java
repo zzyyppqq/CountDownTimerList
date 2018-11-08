@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
         initCountDownTimer();
 
-        click();
     }
 
     private void initCountDownTimer() {
@@ -58,21 +57,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onFinish() {
-                Log.e(TAG, "onFinish"+" , thread:"+Thread.currentThread().getName());
+                Log.e(TAG, "onFinish" + " , thread:" + Thread.currentThread().getName());
             }
         };
         xCountDownTimer.start();
 
     }
 
-    private void click() {
-        findViewById(R.id.bt_test).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-    }
 
     private void runThread() {
         final Thread thread = new Thread(new Runnable() {
@@ -101,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
         final long curTime = System.currentTimeMillis();
         List<TimeEntry> datas = new ArrayList<>();
-        for (long i = 0; i < 40; i++) {
-            final TimeEntry timeEntry = new TimeEntry(i, curTime + ONE_DAY_MS + i * 1000);
+        for (long i = 0; i < 100; i++) {
+            final TimeEntry timeEntry = new TimeEntry(i, curTime + ONE_DAY_MS * i + i * 1000);
             datas.add(timeEntry);
         }
         mTimeDownAdapter.setDatas(datas);
@@ -146,12 +137,19 @@ public class MainActivity extends AppCompatActivity {
 
                 mXTimeCounter.running(new XListCountDownTask(new ViewWrapper(id, tvDownTime)) {
                     @Override
-                    protected void updateView(ViewWrapper viewWrapper) {
+                    protected boolean updateView(ViewWrapper viewWrapper) {
                         final TextView tvDownTime = (TextView) viewWrapper.getView();
 
-                        final String downTime = DataUtil.formatTime(time - System.currentTimeMillis());
-                        tvDownTime.setText(downTime);
+                        long remainTime = time - System.currentTimeMillis();
+                        if (remainTime < 0) {
+                            tvDownTime.setText("剩余 :"+DataUtil.formatDownTime(0));
+                            return false;
+                        }
+                        final String downTime = DataUtil.formatDownTime(remainTime);
+                        tvDownTime.setText("剩余 :" + downTime);
+                        return true;
                     }
+
                 });
             }
         }

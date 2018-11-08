@@ -31,6 +31,7 @@ public abstract class XListCountDownTask extends XTask {
     public void run() {
         final int viewId = mViewWrapper.getViewId();
         final long id = mViewWrapper.getId();
+
         if (isStopTask(viewId, id)) {
             return;
         }
@@ -40,17 +41,16 @@ public abstract class XListCountDownTask extends XTask {
         mWeakHandler.post(new Runnable() {
             @Override
             public void run() {
-                updateView(mViewWrapper);
+
+                if (!updateView(mViewWrapper)){
+                    return;
+                }
             }
         });
-        onNewTask(this, getDeley());
+        onNewTask(this, deleyTime());
     }
 
-    protected long getDeley(){
-        return 1000;
-    }
-
-    protected boolean isStopTask(int viewId, long id) {
+    private boolean isStopTask(int viewId, long id) {
         if (mWeakTimeCounter != null) {
             final XListCountDownTimer xTimeCounter = mWeakTimeCounter.get();
             if (xTimeCounter != null) {
@@ -61,7 +61,11 @@ public abstract class XListCountDownTask extends XTask {
         return false;
     }
 
-    protected abstract void updateView(ViewWrapper viewWrapper);
+    protected long deleyTime() {
+        return 1000;
+    }
+
+    protected abstract boolean updateView(ViewWrapper viewWrapper);
 
 
 }
