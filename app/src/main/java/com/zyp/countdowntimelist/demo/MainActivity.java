@@ -1,6 +1,7 @@
 package com.zyp.countdowntimelist.demo;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         initData();
 
         initCountDownTimer();
+
 
     }
 
@@ -90,10 +92,10 @@ public class MainActivity extends AppCompatActivity {
     public static final long ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
     private void initData() {
-        final long curTime = System.currentTimeMillis();
+        final long curTime = SystemClock.elapsedRealtime();
         List<TimeEntry> datas = new ArrayList<>();
         for (long i = 0; i < 100; i++) {
-            final TimeEntry timeEntry = new TimeEntry(i, curTime + ONE_DAY_MS * i + i * 1000);
+            final TimeEntry timeEntry = new TimeEntry(i, curTime + ONE_DAY_MS * i + i * 1000 + 10000);
             datas.add(timeEntry);
         }
         mTimeDownAdapter.setDatas(datas);
@@ -140,9 +142,9 @@ public class MainActivity extends AppCompatActivity {
                     protected boolean updateView(ViewWrapper viewWrapper) {
                         final TextView tvDownTime = (TextView) viewWrapper.getView();
 
-                        long remainTime = time - System.currentTimeMillis();
+                        long remainTime = time - SystemClock.elapsedRealtime();
                         if (remainTime < 0) {
-                            tvDownTime.setText("剩余 :"+DataUtil.formatDownTime(0));
+                            tvDownTime.setText("剩余 :" + DataUtil.formatDownTime(0));
                             return false;
                         }
                         final String downTime = DataUtil.formatDownTime(remainTime);
