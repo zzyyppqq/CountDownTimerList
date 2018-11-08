@@ -1,11 +1,9 @@
 # CountDownTimerList
-CountDownTimerList 支持修改阴影颜色
+CountDownTimerList 单线程（HanderThread）实现列表倒计时
 
-## 基于CardView version 24.2.1 改写
+![CountDownTimerList](./countdowntimerlist.gif)
 
-![color shadow](./shadow.png)
-
-- 为了更方便的使用支持改变阴影颜色的CardView，基于CardView 24.2.1版本改写了支持改变阴影颜色的库, 为了和官方的CardView库共存，且不冲突，把所有属性、color及style的命名都加了前缀yc，当然也可以单独使用，使用方式如下
+-
 
 builb.gradle
 ```
@@ -23,53 +21,99 @@ pom.xml
 
 ```
 
+
+- 列表倒计时（支持RecyclerView和ListView）
+
 ```
-    <!--android:foreground="@drawable/item_selector"  api>=21 ripper  api<21 selector-->
-    <!--android:stateListAnimator="@drawable/state_list_animator" 点击动画效果 支持api>=21-->
-    <!--CardView 默认使用-->
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="@drawable/item_selector"
-        android:stateListAnimator="@drawable/state_list_animator"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="5dp"
-        app:cardElevation="5dp"
-        app:cardMaxElevation="5dp"
-        app:cardPreventCornerOverlap="false">
+// Adapter 中使用示例 ，一般在Adapter构造函数中初始化XListCountDownTimer
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@null"
-            android:gravity="center"
-            android:text="Hello World!" />
-    </android.support.v7.widget.CardView>
-    <!--YcCardView的使用-->
-    <!--ripper的范围无法控制-->
-    <com.zyp.cardview.YcCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="@drawable/item_selector"
-        android:stateListAnimator="@drawable/state_list_animator"
-        app:ycCardCornerRadius="5dp"
-        app:ycCardElevation="5dp"
-        app:ycCardMaxElevation="5dp"
-        app:ycCardPreventCornerOverlap="true"
-        app:ycStartShadowColor="@color/red">
-        <!--只用设置开始颜色ycStartShadowColor，ycStartShadowColor默认值为#00ffffff 一般不用设置-->
+  class TimeDownAdapter extends BaseAdapter<TimeEntry> {
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:text="Hello World!" />
-    </com.zyp.cardview.YcCardView>
+          private final XListCountDownTimer mXTimeCounter;
+
+          public TimeDownAdapter() {
+              mXTimeCounter = new XListCountDownTimer();
+          }
+
+          @Override
+          protected BaseViewHolder<TimeEntry> createViewHolder(View view) {
+              return new TimeDownViewHolder(view, mXTimeCounter);
+          }
+
+          @Override
+          protected int itemLayout() {
+              return R.layout.item_layout;
+          }
+
+          class TimeDownViewHolder extends BaseViewHolder<TimeEntry> {
+              private XListCountDownTimer mXTimeCounter;
+
+              @BindView(R.id.tv_down_time)
+              TextView tvDownTime;
+
+              public TimeDownViewHolder(View itemView, XListCountDownTimer xTimeCounter) {
+                  super(itemView);
+                  this.mXTimeCounter = xTimeCounter;
+                  ButterKnife.bind(this, itemView);
+              }
+
+              @Override
+              public void bindData(TimeEntry timeEntry) {
+                  final long time = timeEntry.getTime();
+                  final long id = timeEntry.getId();
+
+                  //ViewWrapper的 第一个参数 id必须唯一，类似每隔商品的订单id ，第二个参数View可以是任何View及ViewGroup
+                  mXTimeCounter.running(new XListCountDownTask(new ViewWrapper(id, tvDownTime)) {
+                      @Override
+                      protected boolean updateView(ViewWrapper viewWrapper) {
+                          final TextView tvDownTime = (TextView) viewWrapper.getView();
+
+                          long remainTime = time - SystemClock.elapsedRealtime();
+                          if (remainTime < 0) {
+                              tvDownTime.setText("剩余 :" + DataUtil.formatDownTime(0));
+                              return false;
+                          }
+                          final String downTime = DataUtil.formatDownTime(remainTime);
+                          tvDownTime.setText("剩余 :" + downTime);
+                          return true;
+                      }
+
+                  });
+              }
+          }
+      }
+
+```
+
+- 单个倒计时
+
+```
+ // 倒计时在UI线程中执行
+ XCountDownTimer xCountDownTimer = new XCountDownTimer(30 * 1000, 1000) {
+    @Override
+    protected void onTick(long millisUntilFinished) {
+        Log.e(TAG, "millisUntilFinished : " + millisUntilFinished / 1000);
+    }
+
+    @Override
+    protected void onFinish() {
+        Log.e(TAG, "onFinish" + " , thread:" + Thread.currentThread().getName());
+    }
+};
+xCountDownTimer.start();
+
+// 倒计时在子线程中执行
+ XCountDownTimer xCountDownTimer = new XCountDownTimer(30 * 1000, 1000, false) {
+    @Override
+    protected void onTick(long millisUntilFinished) {
+        Log.e(TAG, "millisUntilFinished : " + millisUntilFinished / 1000);
+    }
+
+    @Override
+    protected void onFinish() {
+        Log.e(TAG, "onFinish" + " , thread:" + Thread.currentThread().getName());
+    }
+};
+xCountDownTimer.start();
 
 ```
