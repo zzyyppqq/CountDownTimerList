@@ -7,7 +7,7 @@ CountDownTimerList 单线程（HanderThread）实现列表倒计时
 
 builb.gradle
 ```
-implementation 'com.zyp.timerlist:timerlist:1.0.0'
+implementation 'com.zyp.timerlist:timerlist:1.0.1'
 ```
 
 pom.xml
@@ -15,7 +15,7 @@ pom.xml
 <dependency>
   <groupId>com.zyp.timerlist</groupId>
   <artifactId>timerlist</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <type>pom</type>
 </dependency>
 
